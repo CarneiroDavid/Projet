@@ -1,25 +1,23 @@
-FROM node:18.15.0 as BUILD
+FROM node:18.15.0 as base
 
-WORKDIR /app
-
-COPY ["package.json", "package-lock.json", "./"]
-
-RUN npm install
+WORKDIR /build
+COPY package*.json /
 RUN npm ci
-
 COPY . .
-
-RUN npm run build
-
-FROM node:18.15.0-alpine3.17
-
-WORKDIR /app
-
-COPY . .
-COPY --from=BUILD /app/package.json .
-COPY --from=BUILD /app/node_modules ./node_modules
-# COPY --from=BUILD /app/build .
-
 EXPOSE 5000
 
-ENTRYPOINT ["node", "./index.js"]
+
+FROM node:18.15.0-alpine3.17 as production
+ENV NODE_ENV=production
+WORKDIR /app
+COPY --from=base /build/* ./
+COPY --from=base /build/node_modules ./node_modules
+CMD ["node", "index.js"]
+
+
+FROM node:18.15.0-alpine3.17 as dev
+ENV NODE_ENV=development
+WORKDIR /app
+COPY --from=base /build/* ./
+COPY --from=base /build/node_modules ./node_modules
+CMD ["nodemon", "bin/www"]
