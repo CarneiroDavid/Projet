@@ -1,0 +1,22 @@
+.Malphite{
+    background-image:'./Malphite.jpg';
+    height:100%;
+    width:100%;
+}
+.replique {
+    display: flex;
+    position: relative;
+    font-size: 38px;
+    color: #bb8000;
+}
+
+.replique:before{
+    content: "\"";
+    font-size:large;
+
+}
+
+.replique:after{
+    content: "\"";
+    font-size:large;
+}
